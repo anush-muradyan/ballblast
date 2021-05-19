@@ -24,7 +24,7 @@ namespace DefaultNamespace
     {
         [SerializeField] private List<UnitInfo> infos;
         [SerializeField] private Priority priority;
-        [SerializeField] private Board board;
+        [SerializeField] private DeathZone zone;
 
         private List<AbstractUnit> units;
 
@@ -85,7 +85,7 @@ namespace DefaultNamespace
                 }
 
                 var unitTransform = unit.transform;
-                if (Mathf.Abs(unitTransform.position.x) > 10 || Mathf.Abs(unitTransform.position.y) > 10f)
+                if (Mathf.Abs(unitTransform.position.x) > zone.rightBoundX || Mathf.Abs(unitTransform.position.y) > zone.sizeY/2)
                 {
                     destroyItem(unit);
                 }

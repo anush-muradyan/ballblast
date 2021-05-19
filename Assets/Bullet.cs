@@ -16,6 +16,7 @@ namespace DefaultNamespace
         private void Update()
         {
             transform.Translate(dir * speed * Time.deltaTime);
+            
         }
     }
 }

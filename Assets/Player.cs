@@ -48,8 +48,9 @@ public class Player : MonoBehaviour
 
         var bullet = Instantiate(shootingItem, shootPoint.position, Quaternion.identity);
         bullet.Shoot(dir);
-        //
-        //
+        
+        
+        
         // shootingItem.position = transform.position;
         // //Debug.Log(shootingItem.position);
         // var input = Input.GetKeyDown(KeyCode.Mouse0);
