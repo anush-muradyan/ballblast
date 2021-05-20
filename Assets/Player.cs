@@ -1,5 +1,7 @@
+using System;
 using DefaultNamespace;
-using Unity.Mathematics;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -7,6 +9,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private Camera camera;
     [SerializeField] private Board board;
+    [SerializeField] private DeathZone deathZone;
     [SerializeField] private Transform pivot;
     [SerializeField] private Transform shootPoint;
     [SerializeField] private float viewAngle;
@@ -14,6 +17,15 @@ public class Player : MonoBehaviour
     [SerializeField] private float rotationSpeed;
 
     [SerializeField] private Bullet shootingItem;
+
+
+    private List<Bullet> activeBullets = new List<Bullet>();
+    private bool _canShoot;
+
+    private void Start()
+    {
+        _canShoot = true;
+    }
 
     private void Update()
     {
@@ -31,9 +43,9 @@ public class Player : MonoBehaviour
         angle = Mathf.Clamp(angle, -viewAngle * 0.5f, viewAngle * 0.5f);
         pivot.rotation = Quaternion.Lerp(pivot.rotation, Quaternion.Euler(Vector3.forward * angle),
             Time.deltaTime * rotationSpeed);
-
-
+        
         Shoot();
+        checkBounds();
     }
 
     private void Shoot()
@@ -43,29 +55,48 @@ public class Player : MonoBehaviour
             return;
         }
 
-        var currentPos = camera.ScreenToWorldPoint(Input.mousePosition);
-        var dir = currentPos - transform.position;
+        if (_canShoot)
+        {
+            StartCoroutine(wait());
+            _canShoot = false;
+            var currentPos = camera.ScreenToWorldPoint(Input.mousePosition);
+            var dir = currentPos - transform.position;
 
-        var bullet = Instantiate(shootingItem, shootPoint.position, Quaternion.identity);
-        bullet.Shoot(dir);
-        
-        
-        
-        // shootingItem.position = transform.position;
-        // //Debug.Log(shootingItem.position);
-        // var input = Input.GetKeyDown(KeyCode.Mouse0);
-        //
-        // if (!input)
-        //     return;
-        //
-        //
-        // Vector3 mouse = camera.ScreenToWorldPoint(Input.mousePosition);
-        // shootingItem.position = mouse;
-        // Debug.Log(shootingItem.position +  "      " + mouse);
+            var bullet = Instantiate(shootingItem, shootPoint.position, Quaternion.identity);
+            
+            bullet.OnHit += onHit;
+            
+            bullet.Shoot(dir);
+            activeBullets.Add(bullet);
+        }
+    }
 
-        //if (Input.GetKey(KeyCode.Mouse0))
-        //{
-        //    Debug.Log("HHH");
-        //}
+    private void onHit()
+    {
+        Debug.LogError("Yeeeeeee");
+    }
+
+    private void checkBounds()
+    {
+        activeBullets?.ForEach(bullet =>
+        {
+            if (bullet == null)
+            {
+                return;
+            }
+            if (bullet.transform.position.y > deathZone.sizeY)
+            {
+                bullet.OnHit -= onHit;
+                Destroy(bullet.gameObject);
+            }
+        });
+
+        activeBullets?.RemoveAll(bullet => bullet == null);
+    }
+
+    private IEnumerator wait()
+    {
+        yield return new WaitForSecondsRealtime(0.2f);
+        _canShoot = true;
     }
 }

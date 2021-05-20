@@ -27,8 +27,8 @@ namespace DefaultNamespace
         [SerializeField] private DeathZone zone;
 
         private List<AbstractUnit> units;
-
-
+        
+        
         private void Start()
         {
             init();
@@ -57,7 +57,7 @@ namespace DefaultNamespace
             }
         }
 
-        public void Spawn(Priority priority)
+        private void Spawn(Priority priority)
         {
             var info = infos.Find(unitInfo => unitInfo.Priority == priority);
             if (info == null)
