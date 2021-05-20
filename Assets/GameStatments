@@ -4,11 +4,6 @@ using UnityEngine;
 
 namespace DefaultNamespace
 {
-    public interface IInterface
-    {
-        
-    }
-    
     
     public class GameStatements
     {
@@ -18,7 +13,7 @@ namespace DefaultNamespace
         {
             if (Input.GetKey("Q"))
             {
-                //Behaviour += Start();
+                Behaviour += Start();
             }
             Behaviour?.Invoke();
         }
