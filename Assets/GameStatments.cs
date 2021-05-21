@@ -1,32 +1,48 @@
 using System;
 using System.Collections.Generic;
+using DefaultNamespace.Unit;
 using UnityEngine;
 
 namespace DefaultNamespace
 {
-    public interface IBehaviour
+
+    public class GameStatements:MonoBehaviour
     {
+        [SerializeField] private Bullet b;
+        public interface IBehaviour
+        {
+            
+        }
         
-    }
-    public class GameStatements
-    {
         public static event Action Behaviour;
-        public List<IBehaviour> Behavioures = new List<IBehaviour>();
+        public static List<IBehaviour> Behavioures = new List<IBehaviour>();
 
         public void StartGame()
         {
             if (Input.GetKey("Q"))
             {
-                Behaviour += Start;
+                Behaviour += Starting;
             }
-
-          
         }
 
-        private void Start()
+        private static void Starting()
         {
             Debug.Log("Starting!");
         }
+        
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            var unit = other.GetComponent<AbstractUnit>();
+            if (unit == null)
+            {
+                return;
+            }  
+            StartGame();
+            Behaviour?.Invoke();
+           
+            
+        }
+        
     }
 }
     

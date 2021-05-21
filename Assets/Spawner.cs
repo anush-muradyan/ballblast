@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DefaultNamespace.GameStates;
 using DefaultNamespace.Unit;
 using Unity.Mathematics;
 using UnityEngine;
@@ -20,20 +21,16 @@ namespace DefaultNamespace
         public int Count => count;
     }
 
-    public class Spawner : MonoBehaviour
+    public class Spawner : MonoBehaviour,IGameStart
     {
         [SerializeField] private List<UnitInfo> infos;
         [SerializeField] private Priority priority;
         [SerializeField] private DeathZone zone;
 
         private List<AbstractUnit> units;
-        
-        
-        private void Start()
-        {
-            init();
-        }
 
+        private bool gameStarted;
+        
         private void Update()
         {
             checkBounds();
@@ -96,6 +93,18 @@ namespace DefaultNamespace
         private void destroyItem(AbstractUnit unit)
         {
             Destroy(unit.gameObject);
+        }
+
+        public void StartGame()
+        {
+            Debug.LogError("Spawner");
+            gameStarted = true;
+            updateStatus();
+        }
+
+        private void updateStatus()
+        {
+            init();
         }
     }
 }

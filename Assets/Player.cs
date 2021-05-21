@@ -2,10 +2,10 @@ using System;
 using DefaultNamespace;
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace.GameStates;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IGameStart
 {
     [SerializeField] private Camera camera;
     [SerializeField] private Board board;
@@ -14,27 +14,50 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform shootPoint;
     [SerializeField] private float viewAngle;
     [SerializeField] private float moveSpeed;
+
     [SerializeField] private float rotationSpeed;
-
+    
     [SerializeField] private Bullet shootingItem;
-
+    private bool isStarting;
 
     private List<Bullet> activeBullets = new List<Bullet>();
+   
     private bool _canShoot;
 
     private void Start()
     {
         _canShoot = true;
+        isStarting = false;
     }
 
     private void Update()
     {
-        Vector3 mouse = camera.ScreenToWorldPoint(Input.mousePosition);
+        if (!isStarting)
+        {
+            return;
+        }
+        CreatingGameObjects();
+        Shoot();
+        checkBounds();
+        
+    }
+
+    public void StartGame()
+    {
+        isStarting = true;
+        Debug.LogError("Player");
+    }
+    
+
+    private void CreatingGameObjects()
+    {
+        var mouse = camera.ScreenToWorldPoint(Input.mousePosition);
         mouse.z = 0f;
         var pos = transform.position;
         var playerSizeX = transform.localScale.x;
         var clampValue = Mathf.Clamp(mouse.x, board.LeftBoundX + playerSizeX * 0.5f,
             board.RightBoundX - playerSizeX * 0.5f);
+
         pos.x = clampValue;
         transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime * moveSpeed);
         var dir = mouse - pivot.position;
@@ -43,9 +66,6 @@ public class Player : MonoBehaviour
         angle = Mathf.Clamp(angle, -viewAngle * 0.5f, viewAngle * 0.5f);
         pivot.rotation = Quaternion.Lerp(pivot.rotation, Quaternion.Euler(Vector3.forward * angle),
             Time.deltaTime * rotationSpeed);
-        
-        Shoot();
-        checkBounds();
     }
 
     private void Shoot()
@@ -63,9 +83,9 @@ public class Player : MonoBehaviour
             var dir = currentPos - transform.position;
 
             var bullet = Instantiate(shootingItem, shootPoint.position, Quaternion.identity);
-            
+
             bullet.OnHit += onHit;
-            
+
             bullet.Shoot(dir);
             activeBullets.Add(bullet);
         }
@@ -84,6 +104,7 @@ public class Player : MonoBehaviour
             {
                 return;
             }
+
             if (bullet.transform.position.y > deathZone.sizeY)
             {
                 bullet.OnHit -= onHit;

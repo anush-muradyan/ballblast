@@ -8,8 +8,8 @@ namespace DefaultNamespace
     public class Bullet : MonoBehaviour
     {
         [SerializeField] private float speed;
-        private Vector2 dir;
 
+        private Vector2 dir;
         public event Action OnHit;
 
         public void Shoot(Vector2 dir)
@@ -28,13 +28,11 @@ namespace DefaultNamespace
             if (unit == null)
             {
                 return;
-            } 
-            
+            }
+           
             OnHit?.Invoke();
-            
-            
-            
             Destroy(unit.gameObject);
         }
+        
     }
 }
