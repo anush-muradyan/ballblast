@@ -3,9 +3,10 @@ using DefaultNamespace;
 using System.Collections;
 using System.Collections.Generic;
 using DefaultNamespace.GameStates;
+using DefaultNamespace.Unit;
 using UnityEngine;
 
-public class Player : MonoBehaviour, IGameStart
+public class Player : MonoBehaviour, IGameStart,IGameWin,IGameLoose,IGamePause,IGameResume
 {
     [SerializeField] private Camera camera;
     [SerializeField] private Board board;
@@ -18,37 +19,84 @@ public class Player : MonoBehaviour, IGameStart
     [SerializeField] private float rotationSpeed;
     
     [SerializeField] private Bullet shootingItem;
-    private bool isStarting;
 
     private List<Bullet> activeBullets = new List<Bullet>();
    
     private bool _canShoot;
 
+    
+    private bool isStarted;
+    private bool isWon;
+    private bool isloosed;
+    private bool isPaused;
     private void Start()
     {
         _canShoot = true;
-        isStarting = false;
+        
     }
 
     private void Update()
     {
-        if (!isStarting)
+        if (!isStarted)
         {
             return;
         }
-        CreatingGameObjects();
-        Shoot();
-        checkBounds();
+
+        if (isPaused)
+        {
+            return;
+        }
+
+        if (!isWon)
+        {
+            CreatingGameObjects();
+            Shoot();
+            checkBounds();
+        }
+
+        if (isWon)
+        {
+            Debug.Log("Player Win");
+            isWon = false;
+        }
+        if (isloosed)
+        {
+            Debug.Log("Player Loose");
+            isloosed = false;
+        }
+        if (isPaused)
+        {
+            Debug.Log("Game Paused");
+            isPaused = false;
+        }
         
     }
 
     public void StartGame()
     {
-        isStarting = true;
-        Debug.LogError("Player");
+        isStarted = true;
+    }
+
+    public void WinGame()
+    {
+        isWon = true;
+    }
+    public void LooseGame()
+    {
+        isloosed = true;
+    }
+
+    public void PauseGame()
+    {
+        isPaused = true;
+        
+    }
+    public void ResumeGame()
+    {
+        isPaused = false;
+
     }
     
-
     private void CreatingGameObjects()
     {
         var mouse = camera.ScreenToWorldPoint(Input.mousePosition);

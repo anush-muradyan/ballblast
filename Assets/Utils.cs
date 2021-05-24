@@ -23,5 +23,14 @@ namespace DefaultNamespace
 
             return holder;
         }
+
+        public static T InstantiateDynamicObject<T>(T original, Vector3 position, Quaternion rotation)
+            where T : Object, IDynamicObject
+        {
+            var obj = Object.Instantiate(original, position, rotation);
+            DynamicObjectsController.Instance.Notify(obj);
+            return obj;
+        }
+        
     }
 }

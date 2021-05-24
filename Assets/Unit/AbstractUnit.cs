@@ -1,11 +1,16 @@
 using System;
+using DefaultNamespace.GameStates;
 using UnityEngine;
 
 namespace DefaultNamespace.Unit
 {
-    public abstract class AbstractUnit : MonoBehaviour
+    public abstract class AbstractUnit : MonoBehaviour, IDynamicObject
     {
         public bool CanMove { get; private set; }
+        public virtual T GetInterface<T>()
+        {
+            return GetComponent<T>();
+        }
 
         public virtual void Init()
         {

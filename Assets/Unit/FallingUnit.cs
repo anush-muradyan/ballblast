@@ -1,10 +1,11 @@
 using System;
+using DefaultNamespace.GameStates;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace DefaultNamespace.Unit
 {
-    public class FallingUnit : AbstractUnit
+    public class FallingUnit : AbstractUnit, IGamePause, IGameResume
     {
         [SerializeField] private float speed;
         [SerializeField] private float minSize;
@@ -12,6 +13,9 @@ namespace DefaultNamespace.Unit
 
         [Range(-270f, -210f), SerializeField] private float minRotationRange;
         [Range(-150f, -90f), SerializeField] private float maxRotationRange;
+
+        private bool isPaused ;
+        private bool isResumed ;
 
         public override void Init()
         {
@@ -22,8 +26,35 @@ namespace DefaultNamespace.Unit
 
         public override void Move()
         {
-            transform.Translate(transform.up * speed * Time.deltaTime, Space.World);
+            if (!isPaused)
+            {
+                transform.Translate(transform.up * speed * Time.deltaTime, Space.World);
+            }
+
+            if (isPaused)
+            {
+                if (isResumed)
+                {
+                    isPaused = false;
+                    isResumed = false;
+                    transform.Translate(transform.up * speed * Time.deltaTime, Space.World);
+                }
+            }
+           
         }
+
+        public void PauseGame()
+        {
+            Debug.LogError("PauseGame");
+            isPaused = true;
+        }
+
+        public void ResumeGame()
+        {
+            Debug.LogError("ResumeGame");
+            isResumed = true;
+        }
+
 
         private void generateSize()
         {
@@ -36,6 +67,6 @@ namespace DefaultNamespace.Unit
             var angle = Random.Range(minRotationRange, maxRotationRange);
             transform.localRotation = Quaternion.Euler(Vector3.forward * angle);
         }
-        
+
     }
 }

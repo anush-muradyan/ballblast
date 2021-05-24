@@ -6,7 +6,7 @@ using UnityEngine;
 namespace DefaultNamespace
 {
 
-    public class GameStatements:MonoBehaviour
+  /*  public class GameStatements:MonoBehaviour
     {
         [SerializeField] private Bullet b;
         public interface IBehaviour
@@ -43,6 +43,6 @@ namespace DefaultNamespace
             
         }
         
-    }
+    }*/
 }
     
