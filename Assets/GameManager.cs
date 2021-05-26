@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DefaultNamespace.GameStates;
+using DefaultNamespace.Unit;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -26,8 +27,7 @@ namespace DefaultNamespace
         private List<IGameLoose> looseGame;
         private List<IGamePause> pause;
         private List<IGameResume> resume;
-        private List<IDynamicObject> enemy;
-        
+        private AbstractUnit u;
         private void Start()
         {
             Prepare();
@@ -36,6 +36,7 @@ namespace DefaultNamespace
         private void OnEnable()
         {
             DynamicObjectsController.Instance.OnNotify.AddListener(handleDynamicObjects);
+            u = new FallingUnit();
         }
 
         private void OnDisable()
@@ -50,7 +51,7 @@ namespace DefaultNamespace
             looseGame = Utils.GetInterfaces<IGameLoose>();
             pause = Utils.GetInterfaces<IGamePause>();
             resume = Utils.GetInterfaces<IGameResume>();
-            //enemy = Utils.GetInterfaces<IDynamicObject>();
+            
         }
 
         private void handleDynamicObjects(IDynamicObject dynamicObject)
@@ -60,8 +61,7 @@ namespace DefaultNamespace
             addInterface(dynamicObject, looseGame);
             addInterface(dynamicObject, pause);
             addInterface(dynamicObject, resume);
-            //addInterface(dynamicObject, enemy);
-
+            
         }
 
         private void addInterface<T>(IDynamicObject dynamicObject, List<T> interfaces)
@@ -108,14 +108,12 @@ namespace DefaultNamespace
             }
             if (Input.GetKeyDown(KeyCode.U))
             {
-                creatEnemy();
+                Debug.Log("enemy created");
+                CreatEnemy.Instance.Notify(u);
             }
         }
 
-        private void creatEnemy()
-        {
-            throw new NotImplementedException();
-        }
+        
 
         private void startGame()
         {
@@ -154,6 +152,15 @@ namespace DefaultNamespace
             {
                 resumeGame();
             }
+        }
+        
+        private void creatEnemy()
+        {
+            Debug.Log("Enemy Created");
+            /*var unit = Utils.InstantiateDynamicObject(UnitPrefab, Vector3.up * (2f + System.Random.value  * 2),
+                Quaternion.identity);
+            unit.SetMoveState(true);
+            unit.Init();*/
         }
     }
 }

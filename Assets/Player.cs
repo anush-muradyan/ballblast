@@ -21,9 +21,9 @@ public class Player : MonoBehaviour, IGameStart,IGameWin,IGameLoose,IGamePause,I
     [SerializeField] private Bullet shootingItem;
 
     private List<Bullet> activeBullets = new List<Bullet>();
-   
+    private int score = 0;   
     private bool _canShoot;
-
+   
     
     private bool isStarted;
     private bool isWon;
@@ -49,7 +49,7 @@ public class Player : MonoBehaviour, IGameStart,IGameWin,IGameLoose,IGamePause,I
 
         if (!isWon)
         {
-            CreatingGameObjects();
+            PivotHolderRotation();
             Shoot();
             checkBounds();
         }
@@ -97,7 +97,7 @@ public class Player : MonoBehaviour, IGameStart,IGameWin,IGameLoose,IGamePause,I
 
     }
     
-    private void CreatingGameObjects()
+    private void PivotHolderRotation()
     {
         var mouse = camera.ScreenToWorldPoint(Input.mousePosition);
         mouse.z = 0f;
@@ -141,7 +141,8 @@ public class Player : MonoBehaviour, IGameStart,IGameWin,IGameLoose,IGamePause,I
 
     private void onHit()
     {
-        Debug.LogError("Yeeeeeee");
+        Debug.Log(++score);
+        
     }
 
     private void checkBounds()

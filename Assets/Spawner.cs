@@ -21,7 +21,7 @@ namespace DefaultNamespace
         public int Count => count;
     }
 
-    public class Spawner : MonoBehaviour,IGameStart,IGameWin,IGameLoose,IGamePause,IGameResume
+    public class Spawner : MonoBehaviour, IGameStart, IGameWin, IGameLoose, IGamePause, IGameResume
     {
         [SerializeField] private List<UnitInfo> infos;
         [SerializeField] private Priority priority;
@@ -33,15 +33,21 @@ namespace DefaultNamespace
         private bool isWon;
         private bool isLoosed;
         private bool isPaused;
-        private bool isResumed;
-        
+        private bool Started;
+
         private void Update()
         {
             if (!gameStarted)
             {
                 return;
             }
-            
+
+            if (isPaused)
+            {
+                return;
+            }
+
+
             if (isWon)
             {
                 units?.ForEach(unit =>
@@ -50,16 +56,17 @@ namespace DefaultNamespace
                     {
                         return;
                     }
-                    
+
                     destroyItem(unit);
                 });
             }
+
             checkBounds();
         }
 
         private void Start()
         {
-            gameStarted = true;
+            Started = true;
         }
 
         private void init()
@@ -77,7 +84,7 @@ namespace DefaultNamespace
                 }
 
                 Spawn(flag);
-                
+
             }
         }
 
@@ -89,21 +96,24 @@ namespace DefaultNamespace
                 return;
             }
 
+            if (!Started)
+            {
+                return;
+            }
+
             for (int j = 0; j < info.Count; j++)
             {
                 // var unit = Instantiate(info.UnitPrefab, Vector3.up * (2f + Random.value * j * 2),
                 //     quaternion.identity);
-                if (gameStarted)
-                {
-                    var unit = Utils.InstantiateDynamicObject(info.UnitPrefab, Vector3.up * (2f + Random.value * j * 2),
-                        Quaternion.identity);
-                    unit.SetMoveState(true);
-                    unit.Init();
-                    units.Add(unit);
-                }
+
+                var unit = Utils.InstantiateDynamicObject(info.UnitPrefab, Vector3.up * (2f + Random.value * j * 2),
+                    Quaternion.identity);
+                unit.SetMoveState(true);
+                unit.Init();
+                units.Add(unit);
             }
 
-            gameStarted = false;
+            Started = false;
         }
 
         private void checkBounds()
@@ -116,13 +126,15 @@ namespace DefaultNamespace
                 }
 
                 var unitTransform = unit.transform;
-                if (Mathf.Abs(unitTransform.position.x) > zone.rightBoundX || Mathf.Abs(unitTransform.position.y) > zone.sizeY/2)
+                if (Mathf.Abs(unitTransform.position.x) > zone.rightBoundX ||
+                    Mathf.Abs(unitTransform.position.y) > zone.sizeY / 2)
                 {
                     destroyItem(unit);
                 }
             });
             units?.RemoveAll(unit => unit == null);
         }
+
         private void destroyItem(AbstractUnit unit)
         {
             Destroy(unit.gameObject);
@@ -130,9 +142,10 @@ namespace DefaultNamespace
 
         public void StartGame()
         {
+            gameStarted = true;
             updateStatus();
         }
-        
+
         public void WinGame()
         {
             isWon = true;
@@ -140,9 +153,9 @@ namespace DefaultNamespace
 
         private void updateStatus()
         {
-            init(); 
+            init();
         }
-        
+
         public void LooseGame()
         {
             isLoosed = true;
@@ -155,7 +168,6 @@ namespace DefaultNamespace
 
         public void ResumeGame()
         {
-            isResumed = true;
             isPaused = false;
         }
     }

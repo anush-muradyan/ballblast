@@ -35,7 +35,6 @@ namespace DefaultNamespace.Unit
             {
                 if (isResumed)
                 {
-                    isPaused = false;
                     isResumed = false;
                     transform.Translate(transform.up * speed * Time.deltaTime, Space.World);
                 }
@@ -53,6 +52,7 @@ namespace DefaultNamespace.Unit
         {
             Debug.LogError("ResumeGame");
             isResumed = true;
+            isPaused = false;
         }
 
 
