@@ -21,7 +21,7 @@ namespace DefaultNamespace
         public int Count => count;
     }
 
-    public class Spawner : MonoBehaviour, IGameStart, IGameWin, IGameLoose, IGamePause, IGameResume
+    public class Spawner : MonoBehaviour, IGameStart, IGameWin, IGameLoose, IGamePause, IGameResume, IGameRestart
     {
         [SerializeField] private List<UnitInfo> infos;
         [SerializeField] private Priority priority;
@@ -88,6 +88,7 @@ namespace DefaultNamespace
             }
         }
 
+       
         private void Spawn(Priority priority)
         {
             var info = infos.Find(unitInfo => unitInfo.Priority == priority);
@@ -169,6 +170,25 @@ namespace DefaultNamespace
         public void ResumeGame()
         {
             isPaused = false;
+        }
+
+        public void RestartGame()
+        {
+            gameStarted = false;
+            isWon = false;
+            isLoosed = false;
+            isPaused = false;
+            Started = true;
+            
+            units.ForEach(unit =>
+            {
+                if (unit != null)
+                {
+                    destroyItem(unit);
+                }
+            });
+            units?.RemoveAll(unit => unit == null);
+           
         }
     }
 }

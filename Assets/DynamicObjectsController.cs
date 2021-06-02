@@ -18,17 +18,28 @@ namespace DefaultNamespace
                 instance = createInstance();
                 return instance;
             }
+            private set
+            {
+                if (instance != null)
+                {
+                    DestroyImmediate(value.gameObject);
+                    return;
+                }
+
+                instance = value;
+            }
         }
 
         protected virtual void Awake()
         {
-            instance = this as T;
+            Instance = this as T;
         }
 
         private static T createInstance()
         {
             var go = new GameObject(typeof(T).Name);
-            return go.AddComponent<T>();
+            var component= go.AddComponent<T>();
+            return component;
         }
     }
 

@@ -20,6 +20,7 @@ namespace DefaultNamespace
 
     public class GameManager : MonoBehaviour
     {
+        [SerializeField] private GameObject winPanel;
         private GameState gameState = GameState.None;
 
         private List<IGameStart> gameStarts;
@@ -27,7 +28,7 @@ namespace DefaultNamespace
         private List<IGameLoose> looseGame;
         private List<IGamePause> pause;
         private List<IGameResume> resume;
-        private AbstractUnit u;
+        private List<IGameRestart> restart;
         private void Start()
         {
             Prepare();
@@ -36,7 +37,6 @@ namespace DefaultNamespace
         private void OnEnable()
         {
             DynamicObjectsController.Instance.OnNotify.AddListener(handleDynamicObjects);
-            u = new FallingUnit();
         }
 
         private void OnDisable()
@@ -51,7 +51,7 @@ namespace DefaultNamespace
             looseGame = Utils.GetInterfaces<IGameLoose>();
             pause = Utils.GetInterfaces<IGamePause>();
             resume = Utils.GetInterfaces<IGameResume>();
-            
+            restart = Utils.GetInterfaces<IGameRestart>();
         }
 
         private void handleDynamicObjects(IDynamicObject dynamicObject)
@@ -94,12 +94,13 @@ namespace DefaultNamespace
 
             if (Input.GetKeyDown(KeyCode.R))
             {
-                restartGame();
+                restartGame();//TODO: implement ME!
+              
             }
 
             if (Input.GetKeyDown(KeyCode.T))
             {
-                gameWin();
+                gameWin();//TODO: Need to be fixed
             }
 
             if (Input.GetKeyDown(KeyCode.Y))
@@ -109,7 +110,6 @@ namespace DefaultNamespace
             if (Input.GetKeyDown(KeyCode.U))
             {
                 Debug.Log("enemy created");
-                CreatEnemy.Instance.Notify(u);
             }
         }
 
@@ -135,13 +135,17 @@ namespace DefaultNamespace
 
         private void restartGame()
         {
+            winPanel.SetActive(false);
             gameState = GameState.Restart;
+            restart?.ForEach(restart => restart.RestartGame());
+            
         }
 
         private void gameWin()
         {
             gameState = GameState.Win;
             winGame?.ForEach(win => win.WinGame());
+            winPanel.SetActive(true);
         }
 
         private void gameLoose()

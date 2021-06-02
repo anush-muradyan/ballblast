@@ -6,7 +6,7 @@ using DefaultNamespace.GameStates;
 using DefaultNamespace.Unit;
 using UnityEngine;
 
-public class Player : MonoBehaviour, IGameStart,IGameWin,IGameLoose,IGamePause,IGameResume
+public class Player : MonoBehaviour, IGameStart, IGameWin, IGameLoose, IGamePause, IGameResume, IGameRestart
 {
     [SerializeField] private Camera camera;
     [SerializeField] private Board board;
@@ -17,22 +17,23 @@ public class Player : MonoBehaviour, IGameStart,IGameWin,IGameLoose,IGamePause,I
     [SerializeField] private float moveSpeed;
 
     [SerializeField] private float rotationSpeed;
-    
+
     [SerializeField] private Bullet shootingItem;
 
     private List<Bullet> activeBullets = new List<Bullet>();
-    private int score = 0;   
+    private int score = 0;
     private bool _canShoot;
-   
-    
+
+
     private bool isStarted;
     private bool isWon;
     private bool isloosed;
     private bool isPaused;
+    private bool gameOver;
+
     private void Start()
     {
         _canShoot = true;
-        
     }
 
     private void Update()
@@ -47,29 +48,31 @@ public class Player : MonoBehaviour, IGameStart,IGameWin,IGameLoose,IGamePause,I
             return;
         }
 
-        if (!isWon)
+        if (!isWon && !gameOver)
         {
             PivotHolderRotation();
             Shoot();
             checkBounds();
         }
 
-        if (isWon)
+        if (isWon && gameOver)
         {
             Debug.Log("Player Win");
-            isWon = false;
+            gameOver = false;
         }
+
         if (isloosed)
         {
             Debug.Log("Player Loose");
             isloosed = false;
         }
+
         if (isPaused)
         {
             Debug.Log("Game Paused");
             isPaused = false;
         }
-        
+
     }
 
     public void StartGame()
@@ -80,7 +83,9 @@ public class Player : MonoBehaviour, IGameStart,IGameWin,IGameLoose,IGamePause,I
     public void WinGame()
     {
         isWon = true;
+        gameOver = true;
     }
+
     public void LooseGame()
     {
         isloosed = true;
@@ -89,12 +94,34 @@ public class Player : MonoBehaviour, IGameStart,IGameWin,IGameLoose,IGamePause,I
     public void PauseGame()
     {
         isPaused = true;
-        
+
     }
+
     public void ResumeGame()
     {
         isPaused = false;
 
+    }
+
+    public void RestartGame()
+    {
+        isStarted = false;
+        isWon = false;
+        isloosed = false;
+        isPaused = false;
+        gameOver = false;
+        score = 0;
+        activeBullets?.ForEach(bullet =>
+        {
+            if (bullet != null)
+            {
+                Destroy(bullet.gameObject);
+                Debug.Log("Destroying bullet");
+            }
+        });
+
+        activeBullets?.RemoveAll(bullet => bullet == null);
+       
     }
     
     private void PivotHolderRotation()
@@ -142,7 +169,6 @@ public class Player : MonoBehaviour, IGameStart,IGameWin,IGameLoose,IGamePause,I
     private void onHit()
     {
         Debug.Log(++score);
-        
     }
 
     private void checkBounds()
@@ -169,4 +195,6 @@ public class Player : MonoBehaviour, IGameStart,IGameWin,IGameLoose,IGamePause,I
         yield return new WaitForSecondsRealtime(0.2f);
         _canShoot = true;
     }
+
+    
 }
