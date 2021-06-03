@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using DefaultNamespace.GameStates;
-using DefaultNamespace.Unit;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace DefaultNamespace
 {
@@ -141,7 +138,7 @@ namespace DefaultNamespace
             
         }
 
-        private void gameWin()
+        public void gameWin()
         {
             gameState = GameState.Win;
             winGame?.ForEach(win => win.WinGame());

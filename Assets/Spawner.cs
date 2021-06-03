@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using DefaultNamespace.GameStates;
 using DefaultNamespace.Unit;
-using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -27,7 +26,7 @@ namespace DefaultNamespace
         [SerializeField] private Priority priority;
         [SerializeField] private DeathZone zone;
 
-        private List<AbstractUnit> units;
+        public List<AbstractUnit> units;
 
         private bool gameStarted;
         private bool isWon;
@@ -35,6 +34,12 @@ namespace DefaultNamespace
         private bool isPaused;
         private bool Started;
 
+        private void Start()
+        {
+            Started = true;
+            Debug.Log("Spawner Start");
+        }
+        
         private void Update()
         {
             if (!gameStarted)
@@ -46,8 +51,7 @@ namespace DefaultNamespace
             {
                 return;
             }
-
-
+            
             if (isWon)
             {
                 units?.ForEach(unit =>
@@ -64,10 +68,7 @@ namespace DefaultNamespace
             checkBounds();
         }
 
-        private void Start()
-        {
-            Started = true;
-        }
+        
 
         private void init()
         {
@@ -82,13 +83,10 @@ namespace DefaultNamespace
                 {
                     continue;
                 }
-
                 Spawn(flag);
-
             }
         }
 
-       
         private void Spawn(Priority priority)
         {
             var info = infos.Find(unitInfo => unitInfo.Priority == priority);
