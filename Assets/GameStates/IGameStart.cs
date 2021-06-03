@@ -1,6 +1,6 @@
 namespace DefaultNamespace.GameStates
 {
-    public interface IGameStart
+    public interface IGameStart:IGameState
     {
         void StartGame();
     }

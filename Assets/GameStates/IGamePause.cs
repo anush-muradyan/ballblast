@@ -1,6 +1,6 @@
 namespace DefaultNamespace.GameStates
 {
-    public interface IGamePause
+    public interface IGamePause:IGameState
     {
         public void PauseGame();
     }

@@ -1,6 +1,6 @@
 namespace DefaultNamespace.GameStates
 {
-    public interface IGameRestart
+    public interface IGameRestart:IGameState
     {
         public void RestartGame();
     }

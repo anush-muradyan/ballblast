@@ -1,6 +1,6 @@
 namespace DefaultNamespace.GameStates
 {
-    public interface IGameLoose
+    public interface IGameLoose:IGameState
     {
         public void LooseGame();
     }

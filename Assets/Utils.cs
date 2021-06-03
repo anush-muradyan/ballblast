@@ -22,6 +22,23 @@ namespace DefaultNamespace
 
             return holder;
         }
+        
+        public static List<TCast> GetInterfaces<T,TCast>() where T : class where TCast : class {
+            var objects = Object.FindObjectsOfType<MonoBehaviour>();
+            var holder = new List<TCast>();
+            for (int i = 0; i < objects.Length; i++)
+            {
+                var component = objects[i].GetComponent<T>();
+                if (component == null)
+                {
+                    continue;
+                }
+
+                holder.Add(component as TCast);
+            }
+
+            return holder;
+        }
 
         public static T InstantiateDynamicObject<T>(T original, Vector3 position, Quaternion rotation)
             where T : Object, IDynamicObject

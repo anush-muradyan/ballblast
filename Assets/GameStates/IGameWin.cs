@@ -1,7 +1,5 @@
-namespace DefaultNamespace.GameStates
-{
-    public interface IGameWin
-    {
-        public void WinGame();
-    }
+namespace DefaultNamespace.GameStates {
+	public interface IGameWin : IGameState {
+		public void WinGame();
+	}
 }

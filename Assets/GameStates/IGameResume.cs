@@ -1,6 +1,6 @@
 namespace DefaultNamespace.GameStates
 {
-    public interface IGameResume
+    public interface IGameResume:IGameState
     {
         public void ResumeGame();
     }
