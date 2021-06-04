@@ -19,9 +19,9 @@ namespace DefaultNamespace {
 	public class GameManager : MonoBehaviour {
 		[SerializeField] private Player player;
 		[SerializeField] private GameObject winPanel;
-		private GameState gameState = GameState.None;
+		public GameState gameState = GameState.None;
 		private Dictionary<Type, List<IGameState>> gameStates;
-		public UnityEvent OnSoot => player.OnShoot;
+		public UnityEvent OnShoot => player.OnShoot;
 		private void Start() {
 			Prepare();
 		}
@@ -38,33 +38,31 @@ namespace DefaultNamespace {
 			gameStates = new Dictionary<Type, List<IGameState>>();
 			AddType<IGameStart>();
 			AddType<IGamePause>();
-			AddType<IGameLoose>();
 			AddType<IGameRestart>();
 			AddType<IGameResume>();
-			AddType<IGameWin>();
 		}
 
 		private void AddType<T>() where T : class {
 			gameStates.Add(typeof(T), Utils.GetInterfaces<T, IGameState>());
 		}
 
-		private List<T> ResolveType<T>() where T : class {
+		private List<T> ResolveType<T>() where T : class
+		{
 			var type = typeof(T);
-			if (!gameStates.ContainsKey(type)) {
+			if (!gameStates.ContainsKey(type))
+			{
 				Debug.LogError("Can not find that type: " + type);
 				return null;
 			}
-
+			
 			return gameStates[type].Select(state => state as T).ToList();
 		}
 
 		private void handleDynamicObjects(IDynamicObject dynamicObject) {
 			addInterface<IGameStart>(dynamicObject);
 			addInterface<IGamePause>(dynamicObject);
-			addInterface<IGameLoose>(dynamicObject);
 			addInterface<IGameRestart>(dynamicObject);
 			addInterface<IGameResume>(dynamicObject);
-			addInterface<IGameWin>(dynamicObject);
 		}
 
 		private void addInterface<T>(IDynamicObject dynamicObject) {
@@ -96,11 +94,11 @@ namespace DefaultNamespace {
 			}
 
 			if (Input.GetKeyDown(KeyCode.R)) {
-				restartGame(); //TODO: implement ME!
+				restartGame();
 			}
 
 			if (Input.GetKeyDown(KeyCode.T)) {
-				gameWin(); //TODO: Need to be fixed
+				gameWin();
 			}
 
 			if (Input.GetKeyDown(KeyCode.Y)) {
@@ -119,12 +117,12 @@ namespace DefaultNamespace {
 				.ForEach(start => start.StartGame());
 		}
 
-		private void pauseGame() {
+		public void pauseGame() {
 			gameState = GameState.Pause;
 			ResolveType<IGamePause>().ForEach(pause => pause.PauseGame());
 		}
 
-		private void resumeGame() {
+		public void resumeGame() {
 			gameState = GameState.Resume;
 			ResolveType<IGameResume>().ForEach(resume => resume.ResumeGame());
 		}
@@ -137,7 +135,7 @@ namespace DefaultNamespace {
 
 		public void gameWin() {
 			gameState = GameState.Win;
-			ResolveType<IGameWin>().ForEach(win => win.WinGame());
+			ResolveType<IGameEnd>().ForEach(win => win.EndGame(GameEnd.Win));
 			winPanel.SetActive(true);
 		}
 

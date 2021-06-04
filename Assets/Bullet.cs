@@ -10,7 +10,7 @@ namespace DefaultNamespace
         [SerializeField] private float speed;
 
         private Vector2 dir;
-        public event Action OnHit;
+        //public event Action OnHit;
 
         public void Shoot(Vector2 dir)
         {
@@ -22,7 +22,7 @@ namespace DefaultNamespace
             transform.Translate(dir * speed * Time.deltaTime);
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+       /* private void OnTriggerEnter2D(Collider2D other)
         {
             var unit = other.GetComponent<AbstractUnit>();
             if (unit == null)
@@ -33,6 +33,6 @@ namespace DefaultNamespace
             OnHit?.Invoke();
             Destroy(unit.gameObject);
         }
-        
+        */
     }
 }

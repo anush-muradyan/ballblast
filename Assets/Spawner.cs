@@ -20,7 +20,7 @@ namespace DefaultNamespace
         public int Count => count;
     }
 
-    public class Spawner : MonoBehaviour, IGameStart, IGameWin, IGameLoose, IGamePause, IGameResume, IGameRestart
+    public class Spawner : MonoBehaviour, IGameStart, IGameEnd, IGamePause, IGameResume, IGameRestart
     {
         [SerializeField] private List<UnitInfo> infos;
         [SerializeField] private Priority priority;
@@ -32,14 +32,11 @@ namespace DefaultNamespace
         private bool isWon;
         private bool isLoosed;
         private bool isPaused;
-        private bool Started;
-
-        private void Start()
-        {
-            Started = true;
-            Debug.Log("Spawner Start");
-        }
         
+        private bool endGame;
+
+      
+
         private void Update()
         {
             if (!gameStarted)
@@ -51,7 +48,7 @@ namespace DefaultNamespace
             {
                 return;
             }
-            
+
             if (isWon)
             {
                 units?.ForEach(unit =>
@@ -68,8 +65,6 @@ namespace DefaultNamespace
             checkBounds();
         }
 
-        
-
         private void init()
         {
             units = new List<AbstractUnit>();
@@ -83,6 +78,7 @@ namespace DefaultNamespace
                 {
                     continue;
                 }
+
                 Spawn(flag);
             }
         }
@@ -94,25 +90,16 @@ namespace DefaultNamespace
             {
                 return;
             }
-
-            if (!Started)
-            {
-                return;
-            }
-
+            
             for (int j = 0; j < info.Count; j++)
             {
-                // var unit = Instantiate(info.UnitPrefab, Vector3.up * (2f + Random.value * j * 2),
-                //     quaternion.identity);
-
                 var unit = Utils.InstantiateDynamicObject(info.UnitPrefab, Vector3.up * (2f + Random.value * j * 2),
                     Quaternion.identity);
                 unit.SetMoveState(true);
                 unit.Init();
                 units.Add(unit);
             }
-
-            Started = false;
+            
         }
 
         private void checkBounds()
@@ -150,15 +137,16 @@ namespace DefaultNamespace
             isWon = true;
         }
 
+        public void LooseGame()
+        {
+            isLoosed = true;
+        }
+
         private void updateStatus()
         {
             init();
         }
 
-        public void LooseGame()
-        {
-            isLoosed = true;
-        }
 
         public void PauseGame()
         {
@@ -176,8 +164,7 @@ namespace DefaultNamespace
             isWon = false;
             isLoosed = false;
             isPaused = false;
-            Started = true;
-            
+
             units.ForEach(unit =>
             {
                 if (unit != null)
@@ -186,7 +173,12 @@ namespace DefaultNamespace
                 }
             });
             units?.RemoveAll(unit => unit == null);
-           
+
+        }
+
+        public void EndGame(GameEnd gameEnd)
+        {
+            endGame = true;
         }
     }
 }

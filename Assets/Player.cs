@@ -5,7 +5,7 @@ using DefaultNamespace.GameStates;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Player : MonoBehaviour, IGameStart, IGameWin, IGameLoose, IGamePause, IGameResume, IGameRestart {
+public class Player : MonoBehaviour, IGameStart,IGameEnd, IGamePause, IGameResume, IGameRestart {
 	[SerializeField] private Camera camera;
 	[SerializeField] private Board board;
 	[SerializeField] private DeathZone deathZone;
@@ -21,25 +21,29 @@ public class Player : MonoBehaviour, IGameStart, IGameWin, IGameLoose, IGamePaus
 	[SerializeField] private GameManager gameManager;
 	private List<Bullet> activeBullets = new List<Bullet>();
 
+
+	private int unitCounts;
+	
 	public UnityEvent OnShoot { get; } = new UnityEvent();
 
 	private int score = 0;
 	private bool _canShoot;
 
-	private bool isStarted;
 	private bool isWon;
 	private bool isloosed;
 	private bool isPaused;
 	private bool gameOver;
 	private int activeBulletCount;
+	private bool endGame;
 
 	private void Start() {
-		Debug.Log("Player ");
 		_canShoot = true;
+		unitCounts=spawner.units.Count;
+		Debug.Log(unitCounts);
 	}
 
 	private void Update() {
-		if (!isStarted) {
+		/*if (!isStarted) {
 			return;
 		}
 
@@ -66,11 +70,18 @@ public class Player : MonoBehaviour, IGameStart, IGameWin, IGameLoose, IGamePaus
 		if (isPaused) {
 			Debug.Log("Game Paused");
 			isPaused = false;
+		}*/
+		
+		if (endGame)
+		{
+			return;
 		}
+		PivotHolderRotation();
+		Shoot();
+		checkBounds();
 	}
 
 	public void StartGame() {
-		isStarted = true;
 		activeBulletCount = spawner.units.Count;
 	}
 
@@ -92,12 +103,13 @@ public class Player : MonoBehaviour, IGameStart, IGameWin, IGameLoose, IGamePaus
 	}
 
 	public void RestartGame() {
-		isStarted = false;
 		isWon = false;
 		isloosed = false;
 		isPaused = false;
 		gameOver = false;
+		endGame = false;
 		score = 0;
+		
 		activeBullets?.ForEach(bullet => {
 			if (bullet != null) {
 				Destroy(bullet.gameObject);
@@ -125,7 +137,7 @@ public class Player : MonoBehaviour, IGameStart, IGameWin, IGameLoose, IGamePaus
 		pivot.rotation = Quaternion.Lerp(pivot.rotation, Quaternion.Euler(Vector3.forward * angle),
 			Time.deltaTime * rotationSpeed);
 	}
-
+	
 	private void Shoot() {
 		if (!Input.GetMouseButtonDown(0)) {
 			return;
@@ -139,14 +151,13 @@ public class Player : MonoBehaviour, IGameStart, IGameWin, IGameLoose, IGamePaus
 
 			var bullet = Instantiate(shootingItem, shootPoint.position, Quaternion.identity);
 
-			bullet.OnHit += onHit;
+			//bullet.OnHit += onHit;
 
 			bullet.Shoot(dir);
 			activeBullets.Add(bullet);
 			OnShoot?.Invoke();
 		}
 	}
-
 	private void onHit() {
 		if (++score == activeBulletCount) {
 			gameManager.gameWin();
@@ -155,13 +166,12 @@ public class Player : MonoBehaviour, IGameStart, IGameWin, IGameLoose, IGamePaus
 		Debug.Log("Score " + score + "  Activebullet " + activeBulletCount);
 		Debug.Log(spawner.units.Count);
 	}
-
+	
 	private void winGame() {
 		if (score == activeBulletCount) {
 			gameManager.gameWin();
 		}
 	}
-
 	private void checkBounds() {
 		activeBullets?.ForEach(bullet => {
 			if (bullet == null) {
@@ -169,7 +179,7 @@ public class Player : MonoBehaviour, IGameStart, IGameWin, IGameLoose, IGamePaus
 			}
 
 			if (bullet.transform.position.y > deathZone.sizeY) {
-				bullet.OnHit -= onHit;
+				//bullet.OnHit -= onHit;
 				Destroy(bullet.gameObject);
 			}
 		});
@@ -181,4 +191,11 @@ public class Player : MonoBehaviour, IGameStart, IGameWin, IGameLoose, IGamePaus
 		yield return new WaitForSecondsRealtime(0.2f);
 		_canShoot = true;
 	}
+
+	public void EndGame(GameEnd gameEnd)
+	{
+		endGame = true;
+	}
+	
+	
 }

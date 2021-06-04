@@ -10,7 +10,7 @@ namespace DefaultNamespace.Unit
         [SerializeField] private float speed;
         [SerializeField] private float minSize;
         [SerializeField] private float maxSize;
-
+        // public event Action OnHit;
         [Range(-270f, -210f), SerializeField] private float minRotationRange;
         [Range(-150f, -90f), SerializeField] private float maxRotationRange;
 
@@ -67,6 +67,18 @@ namespace DefaultNamespace.Unit
             var angle = Random.Range(minRotationRange, maxRotationRange);
             transform.localRotation = Quaternion.Euler(Vector3.forward * angle);
         }
+
+        // private void OnTriggerEnter2D(Collider2D other)
+        // {
+        //     var unit = other.GetComponent<Bullet>();
+        //     if (unit == null)
+        //     {
+        //         return;
+        //     }
+        //    
+        //     OnHit?.Invoke();
+        //     Destroy(unit.gameObject);
+        // }
 
     }
 }

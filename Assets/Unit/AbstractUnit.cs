@@ -6,7 +6,11 @@ namespace DefaultNamespace.Unit
 {
     public abstract class AbstractUnit : MonoBehaviour, IDynamicObject
     {
+        public event Action OnHit;
+        public int countUnits;
+        
         public bool CanMove { get; private set; }
+        
         public virtual T GetInterface<T>()
         {
             return GetComponent<T>();
@@ -32,5 +36,19 @@ namespace DefaultNamespace.Unit
         {
             CanMove = state;
         }
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            var unit = other.GetComponent<Bullet>();
+            if (unit == null)
+            {
+                return;
+            }
+           
+            OnHit?.Invoke();
+            Destroy(gameObject);
+            Destroy(unit.gameObject);
+            countUnits--;
+        }
+        
     }
 }
