@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DefaultNamespace.GameStates;
+using DefaultNamespace.UI.View;
 using DefaultNamespace.Unit;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -18,6 +19,7 @@ namespace DefaultNamespace
         public AbstractUnit UnitPrefab => unitPrefab;
 
         public int Count => count;
+
     }
 
     public class Spawner : MonoBehaviour, IGameStart, IGameEnd, IGamePause, IGameResume, IGameRestart
@@ -26,16 +28,21 @@ namespace DefaultNamespace
         [SerializeField] private Priority priority;
         [SerializeField] private DeathZone zone;
 
-        public List<AbstractUnit> units;
+        [SerializeField] private GameManager gameManager;
 
-        private bool gameStarted;
+        public List<AbstractUnit> units;
+        static public int infosCount = 0;
+        public bool gameStarted;
         private bool isWon;
         private bool isLoosed;
         private bool isPaused;
-        
+        private Vector3 velocity;
         private bool endGame;
 
-      
+        private void Start()
+        {
+            velocity = Random.insideUnitCircle;
+        }
 
         private void Update()
         {
@@ -43,7 +50,6 @@ namespace DefaultNamespace
             {
                 return;
             }
-
             if (isPaused)
             {
                 return;
@@ -62,10 +68,11 @@ namespace DefaultNamespace
                 });
             }
 
+            GameEnd();
             checkBounds();
         }
 
-        private void init()
+        public void Init()
         {
             units = new List<AbstractUnit>();
             var values = Enum.GetValues(typeof(Priority));
@@ -85,6 +92,7 @@ namespace DefaultNamespace
 
         private void Spawn(Priority priority)
         {
+           
             var info = infos.Find(unitInfo => unitInfo.Priority == priority);
             if (info == null)
             {
@@ -93,13 +101,31 @@ namespace DefaultNamespace
             
             for (int j = 0; j < info.Count; j++)
             {
+
                 var unit = Utils.InstantiateDynamicObject(info.UnitPrefab, Vector3.up * (2f + Random.value * j * 2),
                     Quaternion.identity);
                 unit.SetMoveState(true);
                 unit.Init();
                 units.Add(unit);
             }
-            
+
+            infosCount = info.Count;
+            Debug.Log(infosCount);
+        }
+        
+        private void GameEnd()
+        {
+            var info = infos.Find(unitInfo => unitInfo.Priority == priority);
+            if (info == null)
+            {
+                return;
+            }
+            if (infosCount <= 0)
+            {
+                endGame = true;
+                gameManager.gameState = GameState.Win;
+                
+            }
         }
 
         private void checkBounds()
@@ -112,11 +138,18 @@ namespace DefaultNamespace
                 }
 
                 var unitTransform = unit.transform;
-                if (Mathf.Abs(unitTransform.position.x) > zone.rightBoundX ||
-                    Mathf.Abs(unitTransform.position.y) > zone.sizeY / 2)
+                if (Mathf.Abs(unitTransform.position.x) > zone.rightBoundX)
                 {
-                    destroyItem(unit);
+                    velocity.x *= -1f;
+                    //destroyItem(unit);
                 }
+
+                if (Mathf.Abs(unitTransform.position.y) > zone.sizeY / 2)
+                {
+                    velocity.y *= -1;
+                }
+
+                transform.position += velocity*0.8f;
             });
             units?.RemoveAll(unit => unit == null);
         }
@@ -128,8 +161,8 @@ namespace DefaultNamespace
 
         public void StartGame()
         {
+            Init();
             gameStarted = true;
-            updateStatus();
         }
 
         public void WinGame()
@@ -141,12 +174,7 @@ namespace DefaultNamespace
         {
             isLoosed = true;
         }
-
-        private void updateStatus()
-        {
-            init();
-        }
-
+        
 
         public void PauseGame()
         {

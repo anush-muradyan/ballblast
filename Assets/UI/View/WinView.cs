@@ -7,33 +7,40 @@ namespace DefaultNamespace.UI.View
 {
     public class WinViewResult : IViewResult
     {
-        public UnityEvent OnWin { get; }
+        public UnityEvent onRestart { get; }
+        public UnityEvent onHome { get; }
 
         public WinViewResult()
         {
-            OnWin = new UnityEvent();
+            onRestart = new UnityEvent();
+            onHome = new UnityEvent();
         }
 
         public void Dispose()
         {
-            OnWin?.RemoveAllListeners();
+            onRestart?.RemoveAllListeners();
+            onHome?.RemoveAllListeners();
         }
     }
 
     public class WinView : AbstractView<WinViewResult>
     {
-        [SerializeField] private Button winView;
+        [SerializeField] private Button restartButton;
+        [SerializeField] private Button homeButton;
 
         protected override void OnEnable()
         {
             base.OnEnable();
-            winView.onClick.AddListener(Result.OnWin.Invoke);
+           restartButton.onClick.AddListener(Result.onRestart.Invoke);
+           homeButton.onClick.AddListener(Result.onHome.Invoke);
         }
 
         protected override void OnDisableInternal()
         {
             base.OnDisableInternal();
-            winView.onClick.RemoveListener(Result.OnWin.Invoke);
+            restartButton.onClick.RemoveListener(Result.onRestart.Invoke);
+            homeButton.onClick.RemoveListener(Result.onHome.Invoke);
         }
+
     }
 }

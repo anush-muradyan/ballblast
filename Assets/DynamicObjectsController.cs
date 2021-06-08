@@ -38,30 +38,20 @@ namespace DefaultNamespace
         private static T createInstance()
         {
             var go = new GameObject(typeof(T).Name);
-            var component= go.AddComponent<T>();
+            var component = go.AddComponent<T>();
+
             return component;
         }
     }
 
     public class DynamicObjectsController : SingleMonoBehaviour<DynamicObjectsController>
     {
-        [NonSerialized]public UnityEvent<IDynamicObject> OnNotify = new UnityEvent<IDynamicObject>();
+        [NonSerialized] public UnityEvent<IDynamicObject> OnNotify = new UnityEvent<IDynamicObject>();
+
         public void Notify<T>(T obj) where T : IDynamicObject
         {
             OnNotify?.Invoke(obj);
         }
     }
 
-    public class CreatEnemy : SingleMonoBehaviour<CreatEnemy>
-    {
-        [NonSerialized]public UnityEvent<IDynamicObject> OnNotify = new UnityEvent<IDynamicObject>();
-        [SerializeField] private FallingUnit enemy;
-        public void Notify(AbstractUnit obj) 
-        {
-            var unit = Utils.InstantiateDynamicObject(enemy, Vector3.up * (2f + 2),
-                Quaternion.identity);
-            unit.SetMoveState(true);
-            unit.Init();
-        }
-    }
 }

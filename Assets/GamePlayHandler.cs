@@ -11,7 +11,7 @@ namespace DefaultNamespace
 		private GameManager gameManager;
 		private WinView winView;
 
-		public GamePlayHandler(GameView gameView, GameManager gameManager, WinView winView)
+		public GamePlayHandler(GameView gameView, GameManager gameManager,WinView winView)
 		{
 			this.gameView = gameView;
 			this.gameManager = gameManager;
@@ -22,6 +22,7 @@ namespace DefaultNamespace
 		private void initEvents()
 		{
 			gameManager.OnShoot.AddListener(() => gameView.SetAmmoText(Random.value.ToString()));
+			
 		}
 
 		private void resetEvents()

@@ -1,15 +1,16 @@
 using System;
-using DefaultNamespace.GameStates;
+using DefaultNamespace.UI.View;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace DefaultNamespace.Unit
 {
     public abstract class AbstractUnit : MonoBehaviour, IDynamicObject
     {
         public event Action OnHit;
-        public int countUnits;
-        
+
         public bool CanMove { get; private set; }
+       
         
         public virtual T GetInterface<T>()
         {
@@ -36,6 +37,7 @@ namespace DefaultNamespace.Unit
         {
             CanMove = state;
         }
+
         private void OnTriggerEnter2D(Collider2D other)
         {
             var unit = other.GetComponent<Bullet>();
@@ -43,12 +45,15 @@ namespace DefaultNamespace.Unit
             {
                 return;
             }
-           
+
             OnHit?.Invoke();
             Destroy(gameObject);
             Destroy(unit.gameObject);
-            countUnits--;
+
+            Spawner.infosCount--;
+            Debug.Log(Spawner.infosCount);
+
         }
-        
+
     }
 }

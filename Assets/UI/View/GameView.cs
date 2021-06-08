@@ -6,21 +6,22 @@ using UnityEngine.UI;
 namespace DefaultNamespace.UI.View {
 	public class GameViewResult : IViewResult {
 		public UnityEvent OnBack { get; }
-
+		
 		public GameViewResult() {
 			OnBack = new UnityEvent();
 		}
 
 		public void Dispose() {
 			OnBack?.RemoveAllListeners();
+			
 		}
 	}
 
 	public class GameView : AbstractView<GameViewResult> {
-		[SerializeField] private Slider lifeSlider;
+		[SerializeField] public  Slider lifeSlider;
 		[SerializeField] private TextMeshProUGUI ammoText;
 		[SerializeField] private Button backButton;
-
+		[SerializeField] private GameManager gameManager;
 		protected override void OnEnable() {
 			base.OnEnable();
 			backButton.onClick.AddListener(Result.OnBack.Invoke);
@@ -29,6 +30,7 @@ namespace DefaultNamespace.UI.View {
 		protected override void OnDisableInternal() {
 			base.OnDisableInternal();
 			backButton.onClick.RemoveListener(Result.OnBack.Invoke);
+			gameManager.restartGame();
 		}
 
 		public void UpdateLifeSlider(float value) {

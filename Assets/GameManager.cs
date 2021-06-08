@@ -5,8 +5,10 @@ using DefaultNamespace.GameStates;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace DefaultNamespace {
-	public enum GameState {
+namespace DefaultNamespace
+{
+	public enum GameState
+	{
 		None,
 		Started,
 		Pause,
@@ -16,25 +18,32 @@ namespace DefaultNamespace {
 		Loose
 	}
 
-	public class GameManager : MonoBehaviour {
+	public class GameManager : MonoBehaviour
+	{
 		[SerializeField] private Player player;
 		[SerializeField] private GameObject winPanel;
+		[SerializeField] private Spawner spawner;
+
 		public GameState gameState = GameState.None;
 		private Dictionary<Type, List<IGameState>> gameStates;
 		public UnityEvent OnShoot => player.OnShoot;
-		private void Start() {
+
+		private void Awake()
+		{
 			Prepare();
 		}
-
-		private void OnEnable() {
+		private void OnEnable()
+		{
 			DynamicObjectsController.Instance.OnNotify.AddListener(handleDynamicObjects);
 		}
 
-		private void OnDisable() {
+		private void OnDisable()
+		{
 			DynamicObjectsController.Instance.OnNotify.RemoveListener(handleDynamicObjects);
 		}
 
-		public void Prepare() {
+		public void Prepare()
+		{
 			gameStates = new Dictionary<Type, List<IGameState>>();
 			AddType<IGameStart>();
 			AddType<IGamePause>();
@@ -42,7 +51,8 @@ namespace DefaultNamespace {
 			AddType<IGameResume>();
 		}
 
-		private void AddType<T>() where T : class {
+		private void AddType<T>() where T : class
+		{
 			gameStates.Add(typeof(T), Utils.GetInterfaces<T, IGameState>());
 		}
 
@@ -54,95 +64,116 @@ namespace DefaultNamespace {
 				Debug.LogError("Can not find that type: " + type);
 				return null;
 			}
-			
+
 			return gameStates[type].Select(state => state as T).ToList();
 		}
 
-		private void handleDynamicObjects(IDynamicObject dynamicObject) {
+		private void handleDynamicObjects(IDynamicObject dynamicObject)
+		{
 			addInterface<IGameStart>(dynamicObject);
 			addInterface<IGamePause>(dynamicObject);
 			addInterface<IGameRestart>(dynamicObject);
 			addInterface<IGameResume>(dynamicObject);
 		}
 
-		private void addInterface<T>(IDynamicObject dynamicObject) {
+		private void addInterface<T>(IDynamicObject dynamicObject)
+		{
 			var type = typeof(T);
-			if (!gameStates.ContainsKey(type)) {
+			if (!gameStates.ContainsKey(type))
+			{
 				Debug.LogError("Can not find that type: " + type);
 				return;
 			}
 
 			var inter = dynamicObject.GetInterface<T>();
-			if (inter == null) {
+			if (inter == null)
+			{
 				return;
 			}
 
 			gameStates[type].Add(inter as IGameState);
 		}
 
-		private void Update() {
-			if (Input.GetKeyDown(KeyCode.Q)) {
+		private void Update()
+		{
+			if (Input.GetKeyDown(KeyCode.Q))
+			{
 				StartGame();
 			}
 
-			if (Input.GetKeyDown(KeyCode.W)) {
+			if (Input.GetKeyDown(KeyCode.W))
+			{
 				pauseGame();
 			}
 
-			if (Input.GetKeyDown(KeyCode.E)) {
+			if (Input.GetKeyDown(KeyCode.E))
+			{
 				resumeGame();
 			}
 
-			if (Input.GetKeyDown(KeyCode.R)) {
+			if (Input.GetKeyDown(KeyCode.R))
+			{
 				restartGame();
 			}
 
-			if (Input.GetKeyDown(KeyCode.T)) {
+			if (Input.GetKeyDown(KeyCode.T))
+			{
 				gameWin();
 			}
 
-			if (Input.GetKeyDown(KeyCode.Y)) {
+			if (Input.GetKeyDown(KeyCode.Y))
+			{
 				gameLoose();
 			}
 
-			if (Input.GetKeyDown(KeyCode.U)) {
+			if (Input.GetKeyDown(KeyCode.U))
+			{
 				Debug.Log("enemy created");
 			}
 		}
 
 
-		public void StartGame() {
+		public void StartGame()
+		{
 			gameState = GameState.Started;
 			ResolveType<IGameStart>()
 				.ForEach(start => start.StartGame());
 		}
 
-		public void pauseGame() {
+		public void pauseGame()
+		{
 			gameState = GameState.Pause;
-			ResolveType<IGamePause>().ForEach(pause => pause.PauseGame());
+			ResolveType<IGamePause>()
+				.ForEach(pause => pause.PauseGame());
 		}
 
-		public void resumeGame() {
+		public void resumeGame()
+		{
 			gameState = GameState.Resume;
+			spawner.Init();
 			ResolveType<IGameResume>().ForEach(resume => resume.ResumeGame());
 		}
 
-		private void restartGame() {
+		public void restartGame()
+		{
 			winPanel.SetActive(false);
 			gameState = GameState.Restart;
 			ResolveType<IGameRestart>().ForEach(restart => restart.RestartGame());
 		}
 
-		public void gameWin() {
+		public void gameWin()
+		{
 			gameState = GameState.Win;
 			ResolveType<IGameEnd>().ForEach(win => win.EndGame(GameEnd.Win));
 			winPanel.SetActive(true);
 		}
 
-		private void gameLoose() {
+		private void gameLoose()
+		{
 			gameState = GameState.Loose;
 			resumeGame();
-			if (Input.GetKeyDown(KeyCode.M)) {
+			if (Input.GetKeyDown(KeyCode.M))
+			{
 				resumeGame();
 			}
 		}

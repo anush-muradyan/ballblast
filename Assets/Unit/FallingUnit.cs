@@ -10,13 +10,15 @@ namespace DefaultNamespace.Unit
         [SerializeField] private float speed;
         [SerializeField] private float minSize;
         [SerializeField] private float maxSize;
-        // public event Action OnHit;
+        
         [Range(-270f, -210f), SerializeField] private float minRotationRange;
         [Range(-150f, -90f), SerializeField] private float maxRotationRange;
-
+        //[SerializeField] private Transform board;
         private bool isPaused ;
         private bool isResumed ;
 
+        private float direction = 1f;
+        
         public override void Init()
         {
             base.Init();
@@ -28,15 +30,14 @@ namespace DefaultNamespace.Unit
         {
             if (!isPaused)
             {
-                transform.Translate(transform.up * speed * Time.deltaTime, Space.World);
+                transform.Translate(transform.up * speed * direction *Time.deltaTime, Space.World);
             }
-
             if (isPaused)
             {
                 if (isResumed)
                 {
                     isResumed = false;
-                    transform.Translate(transform.up * speed * Time.deltaTime, Space.World);
+                    transform.Translate(transform.up * speed * direction * Time.deltaTime, Space.World);
                 }
             }
            
@@ -55,7 +56,6 @@ namespace DefaultNamespace.Unit
             isPaused = false;
         }
 
-
         private void generateSize()
         {
             var size = Random.Range(minSize, maxSize);
@@ -68,17 +68,9 @@ namespace DefaultNamespace.Unit
             transform.localRotation = Quaternion.Euler(Vector3.forward * angle);
         }
 
-        // private void OnTriggerEnter2D(Collider2D other)
-        // {
-        //     var unit = other.GetComponent<Bullet>();
-        //     if (unit == null)
-        //     {
-        //         return;
-        //     }
-        //    
-        //     OnHit?.Invoke();
-        //     Destroy(unit.gameObject);
-        // }
-
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            direction *= -1;
+        }
     }
 }
