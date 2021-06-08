@@ -13,7 +13,7 @@ public class Board : MonoBehaviour
     private void Update()
     {
 
-        fallingUnit.units?.ForEach(unit =>
+       /* fallingUnit.units?.ForEach(unit =>
         {
             if (unit == null)
             {
@@ -32,7 +32,7 @@ public class Board : MonoBehaviour
                 // unit.transform.position += velocity*0.4f;
             }
             Debug.DrawLine(unit.transform.position, unit.transform.position + unit.transform.up * 2f, Color.red);
-        });
+        });*/
     }
 
     public float LeftBoundX => leftBoundX;

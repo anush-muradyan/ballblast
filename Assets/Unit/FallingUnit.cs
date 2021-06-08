@@ -13,10 +13,12 @@ namespace DefaultNamespace.Unit
         
         [Range(-270f, -210f), SerializeField] private float minRotationRange;
         [Range(-150f, -90f), SerializeField] private float maxRotationRange;
+        
         //[SerializeField] private Transform board;
-        private bool isPaused ;
-        private bool isResumed ;
-
+        
+        private bool isPaused;
+        private bool isResumed;
+ 
         private float direction = 1f;
         
         public override void Init()
@@ -30,7 +32,7 @@ namespace DefaultNamespace.Unit
         {
             if (!isPaused)
             {
-                transform.Translate(transform.up * speed * direction *Time.deltaTime, Space.World);
+                transform.Translate(transform.up * speed * direction * Time.deltaTime, Space.World);
             }
             if (isPaused)
             {
