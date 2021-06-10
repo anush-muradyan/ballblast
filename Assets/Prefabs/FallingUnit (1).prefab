@@ -191,12 +191,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 603d923da1844eaab8c88dd972068f15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 1
+  speed: 0.5
   minSize: 0.2
   maxSize: 1.2
   minRotationRange: -236.9
   maxRotationRange: -94.07
-  _gameObject: {fileID: 0}
 --- !u!61 &4800379659903237726
 BoxCollider2D:
   m_ObjectHideFlags: 0
