@@ -1,4 +1,3 @@
-using System;
 using DefaultNamespace.GameStates;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -18,11 +17,10 @@ namespace DefaultNamespace.Unit
         private bool isPaused;
         private bool isResumed;
 
-        private int direction=1;
+        private int direction = 1;
         private Vector3 size;
         private Vector3 leftSide;
 
-       
 
         public override void Init()
         {
@@ -34,23 +32,7 @@ namespace DefaultNamespace.Unit
 
         public override void Move()
         {
-            
-            // if (!isPaused)
-            // {
-            //     transform.Translate(direction*speed * Time.deltaTime, Space.World);
-            // }
-            // if (isPaused)
-            // {
-            //     if (isResumed)
-            //     {
-            //         isResumed = false;
-            //         transform.Translate(direction * speed * Time.deltaTime, Space.World);
-            //     }
-            // }
-
-
-           
-            
+            //transform.Translate(direction * speed * Time.deltaTime, Space.World);
             
         }
 

@@ -34,6 +34,11 @@ namespace DefaultNamespace.UI
 				Debug.Log("Here");
 				ShowWinView();
 			}
+			if (gameManager.gameState == GameState.Loose)
+			{
+				Debug.Log("Here");
+				ShowLooseView();
+			}
 		}
 
 		private void Start()
@@ -68,6 +73,11 @@ namespace DefaultNamespace.UI
 
 		public void ShowLooseView()
 		{
+			var gameplay = new GamePlayHandler(gameView, gameManager, winView);
+			looseView.Result.onHome.AddListener(ShowHomeView);
+			looseView.Result.onHome.AddListener(gameplay.Dispose);
+			looseView.Result.onRestart.AddListener(ShowGameView);
+			looseView.Result.onRestart.AddListener(gameplay.Dispose);
 			view = looseView.Show();
 		}
 	}

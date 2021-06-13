@@ -31,8 +31,8 @@ namespace DefaultNamespace.UI.View
         protected override void OnEnable()
         {
             base.OnEnable();
-           restartButton.onClick.AddListener(Result.onRestart.Invoke);
-           homeButton.onClick.AddListener(Result.onHome.Invoke);
+            restartButton.onClick.AddListener(Result.onRestart.Invoke);
+            homeButton.onClick.AddListener(Result.onHome.Invoke);
         }
 
         protected override void OnDisableInternal()

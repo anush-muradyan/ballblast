@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
 using DefaultNamespace.Unit;
 using UnityEngine;
 
@@ -11,62 +12,63 @@ public class Test : MonoBehaviour
     public bool leftA=true;
     public bool rightA = true;
     public LayerMask mask;
-
-    
+    [SerializeField] private Spawner spawner;
+    [SerializeField] private Player player;
 
     public void Update()
     {
-        updateStatus();
+        spawner.units?.ForEach(unit =>
+        {
+            if (unit == null)
+            {
+                return;
+            }
+            updateStatus(unit);
+        });
     }
 
-    public void updateStatus()
+    public void updateStatus(AbstractUnit unit)
     {
         var flag = "";
-        CheckCollision(out var left, out var right);
-        Debug.LogError($"{left.collider}, {right.collider}");
+        CheckCollision(out var left, out var right,unit);
+       // Debug.LogError($"{left.collider}, {right.collider}");
         var canMove = left.collider == null && right.collider == null;
         
         if (left.collider != null && leftA)
         {
-            transform.Rotate(Vector3.forward * deltaAngle * -1 * Time.deltaTime);
-            flag = "left";
+           unit.transform.Rotate(Vector3.forward * deltaAngle * -1 * Time.deltaTime);
+           Debug.Log("left");
         }
 
         else if (right.collider != null && rightA)
         {
-            transform.Rotate(Vector3.forward * deltaAngle * Time.deltaTime);
-            flag = "right";
+            unit.transform.Rotate(Vector3.forward * deltaAngle * Time.deltaTime);
+            Debug.Log("right");
            
         }
         
         else if (left.collider && right.collider)   
         {
-            if (flag=="left")
-            {
-                rightA = false;
-            }
-            if (flag=="right")
-            {
-                leftA = false;
-            }
+            Debug.Log(("both"));
+            unit.transform.Rotate(Vector3.up * player.transform.position.y * deltaAngle * Time.deltaTime);
         }
 
-        Debug.LogError(flag);
         if (canMove)
         {
-            transform.Translate(transform.up * Time.deltaTime * 1f, Space.World);
+            unit.transform.Translate(unit.transform.up * Time.deltaTime * 1f, Space.World);
         }
     }
 
-    private void CheckCollision(out RaycastHit2D leftRayHit, out RaycastHit2D rightRayHit)
+    private void CheckCollision(out RaycastHit2D leftRayHit, out RaycastHit2D rightRayHit,AbstractUnit unit)
     {
-        var leftRayOrigin = transform.position + transform.up * transform.localScale.y * 0.5f -
-                            transform.right * transform.localScale.x * 0.5f;
-        var rightRayOrigin = transform.position + transform.up *  transform.localScale.y *0.5f + transform.right * transform.localScale.x * 0.5f;
-        var dir = transform.up;
+        var leftRayOrigin = unit.transform.position + unit.transform.up * unit.transform.localScale.y * 0.5f -
+                            unit.transform.right * unit.transform.localScale.x * 0.5f;
+        var rightRayOrigin = unit.transform.position + unit.transform.up *  unit.transform.localScale.y * 0.5f
+                                                     + unit.transform.right * unit.transform.localScale.x * 0.5f;
+        var dir = unit.transform.up;
 
-        Debug.DrawRay(leftRayOrigin, dir * amount, Color.green);
-        Debug.DrawRay(rightRayOrigin, dir * amount, Color.green);
+        Debug.DrawRay(leftRayOrigin, 2*dir * amount, Color.green);
+        Debug.DrawRay(rightRayOrigin, 2*dir * amount, Color.green);
 
         var leftRay = Physics2D.Raycast(leftRayOrigin, dir, amount, mask);
         var rightRay = Physics2D.Raycast(rightRayOrigin, dir, amount, mask);

@@ -102,7 +102,7 @@ namespace DefaultNamespace
             for (int j = 0; j < info.Count; j++)
             {
 
-                var unit = Utils.InstantiateDynamicObject(info.UnitPrefab, Vector3.up * (2f + Random.value * j * 2),
+                var unit = Utils.InstantiateDynamicObject(info.UnitPrefab, Vector3.up * (1f + Random.value *  1.5f),
                     Quaternion.identity);
                 unit.SetMoveState(true);
                 unit.Init();

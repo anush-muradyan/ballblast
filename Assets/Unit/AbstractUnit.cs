@@ -1,6 +1,7 @@
 using System;
 using DefaultNamespace.UI.View;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace DefaultNamespace.Unit
@@ -8,10 +9,10 @@ namespace DefaultNamespace.Unit
     public abstract class AbstractUnit : MonoBehaviour, IDynamicObject
     {
         public event Action OnHit;
-
+        public Text Score;
+        private int score;
         public bool CanMove { get; private set; }
-       
-        
+
         public virtual T GetInterface<T>()
         {
             return GetComponent<T>();
@@ -52,7 +53,8 @@ namespace DefaultNamespace.Unit
 
             Spawner.infosCount--;
             Debug.Log(Spawner.infosCount);
-
+            score++;
+            Score.text = $"{score}";
         }
 
     }

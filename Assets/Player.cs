@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using DefaultNamespace.GameStates;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour, IGameStart, IGameEnd, IGamePause, IGameResume, IGameRestart
 {
@@ -13,9 +14,10 @@ public class Player : MonoBehaviour, IGameStart, IGameEnd, IGamePause, IGameResu
 	[SerializeField] private DeathZone deathZone;
 	[SerializeField] private Transform pivot;
 	[SerializeField] private Transform shootPoint;
+	[SerializeField] private Slider lifeSlider;
 	[SerializeField] private float viewAngle;
 	[SerializeField] private float moveSpeed;
-
+	
 	[SerializeField] private float rotationSpeed;
 
 	[SerializeField] private Bullet shootingItem;
@@ -157,11 +159,21 @@ public class Player : MonoBehaviour, IGameStart, IGameEnd, IGamePause, IGameResu
 	public void EndGame(GameEnd gameEnd)
 	{
 		endGame = true;
+		
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)
-	{ 
-		// GameView.lifeSlider.value -= 0.1f;
-		// Debug.Log( GameView.lifeSlider.value);
+	{
+		
+		 lifeSlider.value -= 0.5f;
+		 Destroy(other.gameObject);
+		 Debug.Log(lifeSlider.value);
+		 if (lifeSlider.value <= 0)
+		 {
+			 EndGame(GameEnd.Loose);
+			 Debug.Log("GameEnd");
+			 var a=FindObjectOfType<GameManager>().gameState=GameState.Loose;
+			
+		 } 
 	}
 }
