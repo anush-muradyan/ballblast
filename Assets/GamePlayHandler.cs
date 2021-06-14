@@ -1,7 +1,5 @@
 using System;
 using DefaultNamespace.UI.View;
-using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace DefaultNamespace
 {
@@ -9,20 +7,21 @@ namespace DefaultNamespace
 	{
 		private GameView gameView;
 		private GameManager gameManager;
-		private WinView winView;
+		
 
-		public GamePlayHandler(GameView gameView, GameManager gameManager,WinView winView)
+		public GamePlayHandler(GameView gameView, GameManager gameManager)
 		{
 			this.gameView = gameView;
 			this.gameManager = gameManager;
-			this.winView = winView;
+			
 			initEvents();
+			
 		}
 
 		private void initEvents()
 		{
-			gameManager.OnShoot.AddListener(() => gameView.SetAmmoText(Random.value.ToString()));
-			
+			gameManager.OnShoot.AddListener(() => gameView.SetAmmoText($"{Player.bulletCount}"));
+		
 		}
 
 		private void resetEvents()
@@ -44,6 +43,7 @@ namespace DefaultNamespace
 		{
 			gameManager.resumeGame();
 		}
+		
 
 		public void Dispose()
 		{

@@ -9,6 +9,7 @@ namespace DefaultNamespace
     {
     [SerializeField] private float speed;
     private Vector2 dir;
+    
 
     public void Shoot(Vector2 dir)
     {

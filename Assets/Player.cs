@@ -21,6 +21,7 @@ public class Player : MonoBehaviour, IGameStart, IGameEnd, IGamePause, IGameResu
 	[SerializeField] private float rotationSpeed;
 
 	[SerializeField] private Bullet shootingItem;
+	public static int bulletCount = 10;
 	private List<Bullet> activeBullets = new List<Bullet>();
 
 
@@ -78,8 +79,11 @@ public class Player : MonoBehaviour, IGameStart, IGameEnd, IGamePause, IGameResu
 		isPaused = false;
 		gameOver = false;
 		endGame = false;
+		_canShoot = true;
 		score = 0;
-
+		lifeSlider.value = lifeSlider.maxValue;
+		bulletCount = 10;
+		
 		activeBullets?.ForEach(bullet =>
 		{
 			if (bullet != null)
@@ -117,8 +121,16 @@ public class Player : MonoBehaviour, IGameStart, IGameEnd, IGamePause, IGameResu
 			return;
 		}
 
+		if (bulletCount <= 0)
+		{
+			_canShoot = false;
+			return;
+		}
+		
+
 		if (_canShoot)
 		{
+			bulletCount--;
 			StartCoroutine(wait());
 			_canShoot = false;
 			var currentPos = camera.ScreenToWorldPoint(Input.mousePosition);
@@ -129,6 +141,7 @@ public class Player : MonoBehaviour, IGameStart, IGameEnd, IGamePause, IGameResu
 			bullet.Shoot(dir);
 			activeBullets.Add(bullet);
 			OnShoot?.Invoke();
+			Debug.Log(bulletCount);
 		}
 	}
 

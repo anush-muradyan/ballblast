@@ -1,8 +1,6 @@
 using System;
-using DefaultNamespace.UI.View;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 namespace DefaultNamespace.Unit
 {
@@ -52,9 +50,8 @@ namespace DefaultNamespace.Unit
             Destroy(unit.gameObject);
 
             Spawner.infosCount--;
-            Debug.Log(Spawner.infosCount);
             score++;
-            Score.text = $"{score}";
+           // Score.text = $"{score}";
         }
 
     }

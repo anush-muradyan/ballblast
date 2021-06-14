@@ -151,20 +151,23 @@ namespace DefaultNamespace
 		{
 			gameState = GameState.Resume;
 			spawner.Init();
-			ResolveType<IGameResume>().ForEach(resume => resume.ResumeGame());
+			ResolveType<IGameResume>().
+				ForEach(resume => resume.ResumeGame());
 		}
 
 		public void restartGame()
 		{
 			winPanel.SetActive(false);
 			gameState = GameState.Restart;
-			ResolveType<IGameRestart>().ForEach(restart => restart.RestartGame());
+			ResolveType<IGameRestart>().
+				ForEach(restart => restart.RestartGame());
 		}
 
 		public void gameWin()
 		{
 			gameState = GameState.Win;
-			ResolveType<IGameEnd>().ForEach(win => win.EndGame(GameEnd.Win));
+			ResolveType<IGameEnd>().
+				ForEach(win => win.EndGame(GameEnd.Win));
 			winPanel.SetActive(true);
 		}
 

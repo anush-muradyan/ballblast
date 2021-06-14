@@ -60,7 +60,7 @@ namespace DefaultNamespace.Unit
         {
             var angle = Random.Range(minRotationRange, maxRotationRange);
             transform.localRotation = Quaternion.Euler(Vector3.forward * angle);
-            Debug.Log(Quaternion.Euler(leftSide));
+            //Debug.Log(Quaternion.Euler(leftSide));
         }
     }
 }

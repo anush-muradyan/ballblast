@@ -192,7 +192,7 @@ namespace DefaultNamespace
             isWon = false;
             isLoosed = false;
             isPaused = false;
-
+            
             units.ForEach(unit =>
             {
                 if (unit != null)

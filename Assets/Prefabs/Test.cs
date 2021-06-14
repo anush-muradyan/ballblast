@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DefaultNamespace;
 using DefaultNamespace.Unit;
 using UnityEngine;
@@ -37,19 +34,19 @@ public class Test : MonoBehaviour
         if (left.collider != null && leftA)
         {
            unit.transform.Rotate(Vector3.forward * deltaAngle * -1 * Time.deltaTime);
-           Debug.Log("left");
+           //Debug.Log("left");
         }
 
         else if (right.collider != null && rightA)
         {
             unit.transform.Rotate(Vector3.forward * deltaAngle * Time.deltaTime);
-            Debug.Log("right");
+            //Debug.Log("right");
            
         }
         
         else if (left.collider && right.collider)   
         {
-            Debug.Log(("both"));
+            //Debug.Log(("both"));
             unit.transform.Rotate(Vector3.up * player.transform.position.y * deltaAngle * Time.deltaTime);
         }
 
