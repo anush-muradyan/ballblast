@@ -1,55 +1,38 @@
-using System;
-using DefaultNamespace;
-using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
 using DefaultNamespace.GameStates;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class Player : MonoBehaviour, IGameStart, IGameEnd, IGamePause, IGameResume, IGameRestart
-{
+public class Player : MonoBehaviour, IGameStart, IGameEnd, IGameRestart {
 	[SerializeField] private Camera camera;
 	[SerializeField] private Board board;
 	[SerializeField] private DeathZone deathZone;
 	[SerializeField] private Transform pivot;
 	[SerializeField] private Transform shootPoint;
-	[SerializeField] private Slider lifeSlider;
 	[SerializeField] private float viewAngle;
 	[SerializeField] private float moveSpeed;
-	
+	[SerializeField] private int maxBullets;
 	[SerializeField] private float rotationSpeed;
-
+	[SerializeField] private float shootDelay = 0.2f;
 	[SerializeField] private Bullet shootingItem;
-	public static int bulletCount = 10;
+
+	private float life=1f;
+
 	private List<Bullet> activeBullets = new List<Bullet>();
 
-
-	public UnityEvent OnShoot { get; } = new UnityEvent();
-
-	private int score = 0;
-	private bool _canShoot;
+	public UnityEvent<int> OnShoot { get; } = new UnityEvent<int>();
+	public UnityEvent<float> OnLifeChanged { get; } = new UnityEvent<float>();
 
 	private bool isStarted;
-
-	private bool isPaused;
-	private bool gameOver;
 	private bool endGame;
-	private Vector2 velocity;
-	private void Start()
-	{
-		_canShoot = true;
-	}
 
-	private void Update()
-	{
-		if (!isStarted)
-		{
-			return;
-		}
+	private float lastShootTime;
+	private int shootBullets;
 
-		if (endGame)
-		{
+	private void Update() {
+		if (!isStarted || endGame) {
 			return;
 		}
 
@@ -58,36 +41,18 @@ public class Player : MonoBehaviour, IGameStart, IGameEnd, IGamePause, IGameResu
 		checkBounds();
 	}
 
-	public void StartGame()
-	{
+	public void StartGame() {
 		isStarted = true;
 	}
 
-	public void PauseGame()
-	{
-		isPaused = true;
-	}
-
-	public void ResumeGame()
-	{
-		isPaused = false;
-	}
-
-	public void RestartGame()
-	{
+	public void RestartGame() {
 		isStarted = false;
-		isPaused = false;
-		gameOver = false;
 		endGame = false;
-		_canShoot = true;
-		score = 0;
-		lifeSlider.value = lifeSlider.maxValue;
-		bulletCount = 10;
-		
-		activeBullets?.ForEach(bullet =>
-		{
-			if (bullet != null)
-			{
+		shootBullets = 0;
+		lastShootTime = 0;
+
+		activeBullets?.ForEach(bullet => {
+			if (bullet != null) {
 				Destroy(bullet.gameObject);
 			}
 		});
@@ -95,8 +60,7 @@ public class Player : MonoBehaviour, IGameStart, IGameEnd, IGamePause, IGameResu
 		activeBullets?.RemoveAll(bullet => bullet == null);
 	}
 
-	private void PivotHolderRotation()
-	{
+	private void PivotHolderRotation() {
 		var mouse = camera.ScreenToWorldPoint(Input.mousePosition);
 		mouse.z = 0f;
 		var pos = transform.position;
@@ -114,48 +78,49 @@ public class Player : MonoBehaviour, IGameStart, IGameEnd, IGamePause, IGameResu
 			Time.deltaTime * rotationSpeed);
 	}
 
-	private void Shoot()
-	{
-		if (!Input.GetMouseButtonDown(0))
-		{
+	private void Shoot() {
+		if (!Input.GetMouseButtonDown(0)) {
 			return;
 		}
 
-		if (bulletCount <= 0)
-		{
-			_canShoot = false;
-			return;
-		}
-		
-
-		if (_canShoot)
-		{
-			bulletCount--;
-			StartCoroutine(wait());
-			_canShoot = false;
-			var currentPos = camera.ScreenToWorldPoint(Input.mousePosition);
-			var dir = currentPos - transform.position;
-
-			var bullet = Instantiate(shootingItem, shootPoint.position, Quaternion.identity);
-
-			bullet.Shoot(dir);
-			activeBullets.Add(bullet);
-			OnShoot?.Invoke();
-			Debug.Log(bulletCount);
-		}
+		shoot();
 	}
 
-	private void checkBounds()
-	{
-		activeBullets?.ForEach(bullet =>
-		{
-			if (bullet == null)
-			{
+	private bool canShoot() {
+		if (shootBullets >= maxBullets) {
+			return false;
+		}
+
+		var currentTime = Time.time;
+		if (currentTime > lastShootTime) {
+			lastShootTime = currentTime + shootDelay;
+			return true;
+		}
+
+		return false;
+	}
+
+	private void shoot() {
+		if (!canShoot()) {	
+			return;
+		}
+
+		var currentPos = camera.ScreenToWorldPoint(Input.mousePosition);
+		var dir = currentPos - transform.position;
+		var bullet = Instantiate(shootingItem, shootPoint.position, Quaternion.identity);
+		bullet.Shoot(dir);
+		activeBullets.Add(bullet);
+		shootBullets++;
+		OnShoot?.Invoke(maxBullets - shootBullets);
+	}
+
+	private void checkBounds() {
+		activeBullets?.ForEach(bullet => {
+			if (bullet == null) {
 				return;
 			}
 
-			if (bullet.transform.position.y > deathZone.sizeY)
-			{
+			if (bullet.transform.position.y > deathZone.sizeY) {
 				Destroy(bullet.gameObject);
 			}
 		});
@@ -163,30 +128,16 @@ public class Player : MonoBehaviour, IGameStart, IGameEnd, IGamePause, IGameResu
 		activeBullets?.RemoveAll(bullet => bullet == null);
 	}
 
-	private IEnumerator wait()
-	{
-		yield return new WaitForSecondsRealtime(0.2f);
-		_canShoot = true;
-	}
-
-	public void EndGame(GameEnd gameEnd)
-	{
+	public void EndGame(GameEnd gameEnd) {
 		endGame = true;
-		
 	}
 
-	private void OnTriggerEnter2D(Collider2D other)
-	{
-		
-		 lifeSlider.value -= 0.5f;
-		 Destroy(other.gameObject);
-		 Debug.Log(lifeSlider.value);
-		 if (lifeSlider.value <= 0)
-		 {
-			 EndGame(GameEnd.Loose);
-			 Debug.Log("GameEnd");
-			 var a=FindObjectOfType<GameManager>().gameState=GameState.Loose;
-			
-		 } 
+	private void OnTriggerEnter2D(Collider2D other) {
+		Destroy(other.gameObject);
+		life -= 0.2f;
+		OnLifeChanged?.Invoke(life);
+		if (!(life <= 0)) return;
+		EndGame(GameEnd.Loose);
+		Debug.Log("GameEnd");
 	}
 }

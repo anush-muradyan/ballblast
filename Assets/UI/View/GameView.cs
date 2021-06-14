@@ -40,5 +40,10 @@ namespace DefaultNamespace.UI.View {
 		public void SetAmmoText(string text) {
 			ammoText.text = text;
 		}
+
+		public void Init(GameInit gameInit) {
+			SetAmmoText($"{gameInit.BulletCount}");
+			UpdateLifeSlider(gameInit.Life);
+		}
 	}
 }
