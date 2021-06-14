@@ -1,5 +1,6 @@
 using DefaultNamespace.GameStates;
 using UnityEngine;
+using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
 namespace DefaultNamespace.Unit
@@ -13,6 +14,8 @@ namespace DefaultNamespace.Unit
         [Range(-270f, -210f), SerializeField] private float minRotationRange;
         [Range(-150f, -90f), SerializeField] private float maxRotationRange;
         
+        
+        public UnityEvent OnRequestPlayerDirection { get; }
         
         private bool isPaused;
         private bool isResumed;

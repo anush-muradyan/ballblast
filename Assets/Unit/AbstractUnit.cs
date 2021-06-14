@@ -11,6 +11,8 @@ namespace DefaultNamespace.Unit
         private int score;
         public bool CanMove { get; private set; }
 
+        public event Func<AbstractUnit,Vector2> OnRequestPlayerDirection; 
+
         public virtual T GetInterface<T>()
         {
             return GetComponent<T>();
@@ -30,6 +32,7 @@ namespace DefaultNamespace.Unit
             }
 
             Move();
+            var dir = OnRequestPlayerDirection?.Invoke(this);
         }
 
         public void SetMoveState(bool state)

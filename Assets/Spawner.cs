@@ -27,6 +27,7 @@ namespace DefaultNamespace
         [SerializeField] private List<UnitInfo> infos;
         [SerializeField] private Priority priority;
         [SerializeField] private DeathZone zone;
+        [SerializeField] private Player player;
 
         [SerializeField] private GameManager gameManager;
 
@@ -104,6 +105,7 @@ namespace DefaultNamespace
 
                 var unit = Utils.InstantiateDynamicObject(info.UnitPrefab, Vector3.up * (1f + Random.value *  1.5f),
                     Quaternion.identity);
+                unit.OnRequestPlayerDirection += requestDirectionPlayer;
                 unit.SetMoveState(true);
                 unit.Init();
                 units.Add(unit);
@@ -112,7 +114,14 @@ namespace DefaultNamespace
             infosCount = info.Count;
             Debug.Log(infosCount);
         }
-        
+
+        private Vector2 requestDirectionPlayer(AbstractUnit currentUnit) {
+            var pos = currentUnit.transform.position;
+            var playerPos = player.transform.position;
+            var dir = playerPos - pos;
+            return dir;
+        }
+
         private void GameEnd()
         {
             var info = infos.Find(unitInfo => unitInfo.Priority == priority);
